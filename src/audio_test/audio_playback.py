@@ -51,7 +51,7 @@ for filename in files:
     print(f"Channels: {num_channels}")
     print(f"Duration: {duration}")
 
-    stream = p.open(format=pyaudio.paFloat32, channels=num_channels, rate=sr, output=True)
+    stream = p.open(format=pyaudio.paFloat32, channels=num_channels, rate=int(sr), output=True)
 
     print("Playing stream")
     # we need to play the first frame and then the rest of the frames
