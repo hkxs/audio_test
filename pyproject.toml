@@ -7,6 +7,9 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
+librosa = "^0.10.2.post1"
+matplotlib = "^3.9.2"
+pyaudio = "^0.2.14"
 
 
 [build-system]
