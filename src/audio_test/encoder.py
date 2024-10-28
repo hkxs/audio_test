@@ -17,10 +17,13 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
-
+import time
 from pathlib import Path
 
 import librosa
+import pyaudio
+import scipy
+
 
 from pitch_estimation import pitch_estimator
 
@@ -31,8 +34,27 @@ data, sr = librosa.load(audio_dir / "o_sound.wav", mono=False, sr=None)
 
 pitch = pitch_estimator(data, sr)
 print(pitch)  # this should be close to 100Hz
+b = librosa.lpc(data, order=10)
 
-data, sr = librosa.load(audio_dir / "sh_sound.wav", mono=False, sr=None)
+period = int(sr // pitch)
+impulse_train = scipy.signal.unit_impulse(len(data), range(1, len(data), period))
+reconstructed = scipy.signal.lfilter(b[1:], [1], impulse_train)
 
-pitch = pitch_estimator(data, sr)
-print(pitch)  # this should be mostly noise, so no frequency
+
+p = pyaudio.PyAudio()
+stream = p.open(format=pyaudio.paFloat32, channels=1, rate=int(sr), output=True)
+
+stream.write(data.astype('float32').tobytes())
+time.sleep(2)
+stream.write(reconstructed.astype('float32').tobytes())
+
+
+stream.close()
+p.terminate()
+
+import matplotlib.pyplot as plt
+plt.plot(data)
+plt.show()
+
+plt.plot(reconstructed)
+plt.show()
