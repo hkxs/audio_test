@@ -87,7 +87,7 @@ def pitch_estimator(signal: np.array, sample_rate: float) -> float:
             period = 0
             logger.debug("Non-periodic signal")
 
-    freq = sample_rate / period if period else 0
+    freq = sample_rate / period if period else -1
 
     return freq
 
